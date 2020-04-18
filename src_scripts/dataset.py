@@ -10,16 +10,20 @@ import torch
 
 
 class BengaliDataset:
-    def __init__(self, phase, img_height, img_width, mean, std):
-        df = pd.read_csv("input/train.csv")
-        df = df[
+    def __init__(self, data, phase, img_height, img_width, mean, std):
+        df = data[
             ["image_id", "grapheme_root", "vowel_diacritic", "consonant_diacritic",]
         ]
-
-        self.image_ids = df.image_id.values
-        self.grapheme_root = df.grapheme_root.values
-        self.vowel_diacritic = df.vowel_diacritic.values
-        self.consonant_diacritic = df.consonant_diacritic.values
+        self.df_use = df.drop(df.columns.difference(["image_id"]), 1, inplace=False)
+        self.grapheme_root = df.drop(
+            df.columns.difference(["grapheme_root"]), 1, inplace=False
+        )
+        self.vowel_diacritic = df.drop(
+            df.columns.difference(["vowel_diacritic"]), 1, inplace=False
+        )
+        self.consonant_diacritic = df.drop(
+            df.columns.difference(["consonant_diacritic"]), 1, inplace=False
+        )
         self.aug = self.augmentation(mean, std, phase)
 
     @staticmethod
@@ -38,21 +42,26 @@ class BengaliDataset:
         return empty
 
     def __len__(self):
-        return len(self.image_ids)
+        return len(self.df_use)
 
     def __getitem__(self, item):
-        image = joblib.load(f"input/image_pickles/{self.image_ids[item]}.pkl")
+
+        image = joblib.load(
+            f"input/image_pickles/{self.df_use.loc[item].values[0]}.pkl"
+        )
         image = image.reshape(137, 236)
 
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
         image = self.aug(image=image)["image"].type(torch.float)
         return {
             "image": image,
-            "grapheme_root": torch.tensor(self.grapheme_root[item], dtype=torch.long),
+            "grapheme_root": torch.tensor(
+                self.grapheme_root.loc[item].values[0], dtype=torch.long
+            ),
             "vowel_diacritic": torch.tensor(
-                self.vowel_diacritic[item], dtype=torch.long
+                self.vowel_diacritic.loc[item].values[0], dtype=torch.long
             ),
             "consonant_diacritic": torch.tensor(
-                self.consonant_diacritic[item], dtype=torch.long
+                self.consonant_diacritic.loc[item].values[0], dtype=torch.long
             ),
         }

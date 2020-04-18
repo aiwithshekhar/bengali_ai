@@ -142,3 +142,4 @@ cython_debug/
 .zip
 *.ipynb
 input/
+checkpoints/
