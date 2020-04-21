@@ -40,3 +40,4 @@ class Scores:
 def epoch_score(loss, scr):
     epoch_score = scr.get_metrics()
     print(f"Loss: {loss:.4f} | Recall_Score: {epoch_score:.4f}")
+    return epoch_score

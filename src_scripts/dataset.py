@@ -14,6 +14,7 @@ class BengaliDataset:
         df = data[
             ["image_id", "grapheme_root", "vowel_diacritic", "consonant_diacritic",]
         ]
+
         self.df_use = df.drop(df.columns.difference(["image_id"]), 1, inplace=False)
         self.grapheme_root = df.drop(
             df.columns.difference(["grapheme_root"]), 1, inplace=False

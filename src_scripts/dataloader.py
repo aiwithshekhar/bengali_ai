@@ -33,5 +33,7 @@ def Bengali_dataloader(phase, img_height, img_width, mean, std, batch):
         idx = val_idx
 
     init_dataset = BengaliDataset(df.iloc[idx], phase, img_height, img_width, mean, std)
-    init_dataloader = DataLoader(init_dataset, batch_size=batch, sampler=sampler,)
+    init_dataloader = DataLoader(
+        init_dataset, batch_size=batch, sampler=sampler, drop_last=True
+    )
     return init_dataloader
